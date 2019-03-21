@@ -134,6 +134,14 @@ if not M.references_mode and number_of_assemblers_in_config_file!=1 :
                        if you do mean to use assembly, please set 'run: true' for one of the,\
                        following available assemblers: %s" % ', '.join(available_assemblers))
 
+# sanity check for mapping
+# make sure that user specified a mapping software
+if number_of_mapppers_in_config_file != 1:
+	raise ConfigError("Oops! You didn't specify a mapping software. Depending on whether \
+						you are mapping to nucleotide or protein sequences, you should pick \
+						one of the following mappers and set 'run: true' for it in your \
+						config file: %s" % ', '.join(available_mappers))
+
 ruleorder: import_percent_of_reads_mapped > import_krakenuniq_taxonomy
 
 rule metagenomics_workflow_target_rule:
