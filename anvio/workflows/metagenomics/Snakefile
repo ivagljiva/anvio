@@ -7,7 +7,7 @@
     It includes the following steps:
     Quality filtering
     Assembly using megahit
-    Mapping of metagenomes to assemblies using bowtie2
+    Mapping of metagenomes to assemblies using bowtie2 or diamond
     generating anvio contigs database (including running hmm profile)
     generating anvio profile database
 
