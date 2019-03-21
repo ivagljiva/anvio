@@ -490,6 +490,8 @@ class MetagenomicsWorkflow(ContigsDBWorkflow, WorkflowSuperClass):
     def get_assembly_software_list(self):
         return ['megahit', 'idba_ud', 'metaspades']
 
+	def get_mapping_software_list(self):
+		return ['bowtie', 'diamond']
 
     def gen_report_with_references_for_removal_info(self, filtered_id_files, output_file_name):
         ''' If mapping was done to reference for removal then we create a report with the results.'''

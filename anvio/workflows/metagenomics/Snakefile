@@ -100,6 +100,19 @@ if number_of_assemblers_in_config_file > 1:
                         software, yet all the following software are  \
                         included in your config file: %s. Please include only one." % assembly_software_in_config)
 
+# sanity check for requested mapping
+# make sure that the user is not requesting multiple mappers
+available_mappers = M.get_mapping_software_list()
+number_of_mapppers_in_config_file = 0
+mappers_in_config = list()
+for m in available_mappers:
+	if M.get_param_value_from_config([m, 'run']) == True:
+		number_of_mapppers_in_config_file += 1
+		mappers_in_config.append(m)
+if number_of_mapppers_in_config_file > 1:
+	raise ConfigError("This workflow supports the usage of only one mapping \
+						software, yet all the following software are included \
+						in your config file: %s. Please include only one." % mappers_in_config)
 
 # by default fastq files will be zipped after qc is done
 run_gzip_fastqs = M.get_param_value_from_config(['gzip_fastqs', 'run']) == True
