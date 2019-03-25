@@ -772,7 +772,7 @@ if M.get_param_value_from_config(['diamond', 'run']) == True:
                 diamond blastx --threads {threads} --db {params.bowtie_build_prefix} --query {input.r1} \
                 --outfmt 101 --out {output.sam} {params.additional_params} >> {log} 2>&1
             """
-def input_for_samtools():
+def input_for_samtools(wildcards):
     """Return .sam input for samtools view depending on which mapper has been run"""
     if M.get_param_value_from_config(['bowtie', 'run']) == True:
         return rules.bowtie.output.sam
