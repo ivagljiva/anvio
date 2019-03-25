@@ -135,7 +135,7 @@ class MetagenomicsWorkflow(ContigsDBWorkflow, WorkflowSuperClass):
                                     'iu_filter_quality_minoche': {"run": True, "--ignore-deflines": True},
                                     "gzip_fastqs": {"run": True},
                                     "bowtie": {"run": True, "additional_params": "--no-unal", "threads": 3},
-									"diamond": {"run": False, "additional_params": "--unal 0"}
+									"diamond": {"run": False, "additional_params": "--unal 0", "threads": 3},
                                     "samtools_view": {"additional_params": "-F 4"},
                                     "anvi_profile": {"threads": 3, "--sample-name": "{sample}", "--overwrite-output-destinations": True},
                                     "anvi_merge": {"--sample-name": "{group}", "--overwrite-output-destinations": True},
