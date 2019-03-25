@@ -91,7 +91,7 @@ class MetagenomicsWorkflow(ContigsDBWorkflow, WorkflowSuperClass):
                                                   "--no_bubble", "--no_local", "--no_coverage",
                                                   "--no_correct", "--pre_correction"]
         rule_acceptable_params_dict['bowtie'] = ["run","additional_params"]
-		rule_acceptable_params_dict['diamond'] = ["run"]
+		rule_acceptable_params_dict['diamond'] = ["run", "additional_params"]
         rule_acceptable_params_dict['samtools_view'] = ["additional_params"]
         rule_acceptable_params_dict['anvi_profile'] = ["--overwrite-output-destinations", "--sample-name", "--report-variability-full",
                                                         "--skip-SNV-profiling", "--profile-SCVs", "--description",
@@ -135,7 +135,7 @@ class MetagenomicsWorkflow(ContigsDBWorkflow, WorkflowSuperClass):
                                     'iu_filter_quality_minoche': {"run": True, "--ignore-deflines": True},
                                     "gzip_fastqs": {"run": True},
                                     "bowtie": {"run": True, "additional_params": "--no-unal", "threads": 3},
-									"diamond": {"run": False}
+									"diamond": {"run": False, "additional_params": "--unal 0"}
                                     "samtools_view": {"additional_params": "-F 4"},
                                     "anvi_profile": {"threads": 3, "--sample-name": "{sample}", "--overwrite-output-destinations": True},
                                     "anvi_merge": {"--sample-name": "{group}", "--overwrite-output-destinations": True},
