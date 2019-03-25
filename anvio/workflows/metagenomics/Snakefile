@@ -728,6 +728,19 @@ if M.get_param_value_from_config(['bowtie', 'run']) == True:
 	            {params.additional_params} -S {output.sam} >> {log} 2>&1
 	        """
 
+if M.get_param_value_from_config(['diamond', 'run']) == True:
+	rule diamond_build:
+	    """ Run diamond makedb on the contigs fasta"""
+	    log: dirs_dict["LOGS_DIR"] + "/{group}-diamond_build.log"
+	    input: M.get_fasta
+	    output:
+	        o = expand(dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs" + '.dmnd', group="{group}")
+	    params:
+	        prefix = dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs"
+	    threads: M.T('diamond_build')
+	    resources: nodes = M.T('diamond_build'),
+	    shell: "diamond makedb --in {input} --db {params.prefix} >> {log} 2>&1"
+
 
 rule samtools_view:
     """ sort sam file with samtools and create a RAW.bam file"""
