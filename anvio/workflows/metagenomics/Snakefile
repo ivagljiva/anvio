@@ -753,7 +753,7 @@ def input_for_diamond(wildcards):
     return d
 
 if M.get_param_value_from_config(['diamond', 'run']) == True:
-    rule bowtie:
+    rule diamond:
         """ Run mapping with diamond"""
         version: 1.0
         log: dirs_dict["LOGS_DIR"] + "/{group}-{sample}-diamond.log"
