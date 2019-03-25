@@ -106,13 +106,13 @@ available_mappers = M.get_mapping_software_list()
 number_of_mapppers_in_config_file = 0
 mappers_in_config = list()
 for m in available_mappers:
-	if M.get_param_value_from_config([m, 'run']) == True:
-		number_of_mapppers_in_config_file += 1
-		mappers_in_config.append(m)
+    if M.get_param_value_from_config([m, 'run']) == True:
+        number_of_mapppers_in_config_file += 1
+        mappers_in_config.append(m)
 if number_of_mapppers_in_config_file > 1:
-	raise ConfigError("This workflow supports the usage of only one mapping \
-						software, yet all the following software are included \
-						in your config file: %s. Please include only one." % mappers_in_config)
+    raise ConfigError("This workflow supports the usage of only one mapping \
+                        software, yet all the following software are included \
+                        in your config file: %s. Please include only one." % mappers_in_config)
 
 # by default fastq files will be zipped after qc is done
 run_gzip_fastqs = M.get_param_value_from_config(['gzip_fastqs', 'run']) == True
@@ -137,10 +137,10 @@ if not M.references_mode and number_of_assemblers_in_config_file!=1 :
 # sanity check for mapping
 # make sure that user specified a mapping software
 if number_of_mapppers_in_config_file != 1:
-	raise ConfigError("Oops! You didn't specify a mapping software. Depending on whether \
-						you are mapping to nucleotide or protein sequences, you should pick \
-						one of the following mappers and set 'run: true' for it in your \
-						config file: %s" % ', '.join(available_mappers))
+    raise ConfigError("Oops! You didn't specify a mapping software. Depending on whether \
+                        you are mapping to nucleotide or protein sequences, you should pick \
+                        one of the following mappers and set 'run: true' for it in your \
+                        config file: %s" % ', '.join(available_mappers))
 
 ruleorder: import_percent_of_reads_mapped > import_krakenuniq_taxonomy
 
@@ -680,21 +680,21 @@ if M.get_param_value_from_config(['megahit', 'run']) == True:
             shell("rm -rf {params.temp_dir}")
 
 if M.get_param_value_from_config(['bowtie', 'run']) == True:
-	rule bowtie_build:
-	    """ Run bowtie-build on the contigs fasta"""
-	    # TODO: consider runnig this as a shadow rule
-	    version: 1.0
-	    log: dirs_dict["LOGS_DIR"] + "/{group}-bowtie_build.log"
-	    input: M.get_fasta
-	    # I touch this file because the files created have different suffix
-	    output:
-	        o1 = expand(dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs" + '.{i}.bt2', i=[1,2,3,4], group="{group}"),
-	        o2 = expand(dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs" + '.rev.{i}.bt2', i=[1,2], group="{group}")
-	    params:
-	        prefix = dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs"
-	    threads: M.T('bowtie_build')
-	    resources: nodes = M.T('bowtie_build'),
-	    shell: "bowtie2-build {input} {params.prefix} >> {log} 2>&1"
+    rule bowtie_build:
+        """ Run bowtie-build on the contigs fasta"""
+        # TODO: consider runnig this as a shadow rule
+        version: 1.0
+        log: dirs_dict["LOGS_DIR"] + "/{group}-bowtie_build.log"
+        input: M.get_fasta
+        # I touch this file because the files created have different suffix
+        output:
+            o1 = expand(dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs" + '.{i}.bt2', i=[1,2,3,4], group="{group}"),
+            o2 = expand(dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs" + '.rev.{i}.bt2', i=[1,2], group="{group}")
+        params:
+            prefix = dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs"
+        threads: M.T('bowtie_build')
+        resources: nodes = M.T('bowtie_build'),
+        shell: "bowtie2-build {input} {params.prefix} >> {log} 2>&1"
 
 
 def input_for_bowtie(wildcards):
@@ -709,37 +709,37 @@ def input_for_bowtie(wildcards):
     return d
 
 if M.get_param_value_from_config(['bowtie', 'run']) == True:
-	rule bowtie:
-	    """ Run mapping with bowtie2"""
-	    version: 1.0
-	    log: dirs_dict["LOGS_DIR"] + "/{group}-{sample}-bowtie.log"
-	    input: unpack(input_for_bowtie)
-	    # setting the output as temp, since we only want to keep the bam file.
-	    output:
-	        sam = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}.sam")
-	    params:
-	        bowtie_build_prefix = rules.bowtie_build.params.prefix,
-	        additional_params = M.get_param_value_from_config(["bowtie", "additional_params"])
-	    threads: M.T('bowtie')
-	    resources: nodes = M.T('bowtie'),
-	    shell:
-	        """
-	            bowtie2 --threads {threads} -x {params.bowtie_build_prefix} -1 {input.r1} -2 {input.r2} \
-	            {params.additional_params} -S {output.sam} >> {log} 2>&1
-	        """
+    rule bowtie:
+        """ Run mapping with bowtie2"""
+        version: 1.0
+        log: dirs_dict["LOGS_DIR"] + "/{group}-{sample}-bowtie.log"
+        input: unpack(input_for_bowtie)
+        # setting the output as temp, since we only want to keep the bam file.
+        output:
+            sam = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}.sam")
+        params:
+            bowtie_build_prefix = rules.bowtie_build.params.prefix,
+            additional_params = M.get_param_value_from_config(["bowtie", "additional_params"])
+        threads: M.T('bowtie')
+        resources: nodes = M.T('bowtie'),
+        shell:
+            """
+                bowtie2 --threads {threads} -x {params.bowtie_build_prefix} -1 {input.r1} -2 {input.r2} \
+                {params.additional_params} -S {output.sam} >> {log} 2>&1
+            """
 
 if M.get_param_value_from_config(['diamond', 'run']) == True:
-	rule diamond_build:
-	    """ Run diamond makedb on the contigs fasta"""
-	    log: dirs_dict["LOGS_DIR"] + "/{group}-diamond_build.log"
-	    input: M.get_fasta
-	    output:
-	        o = expand(dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs.dmnd", group="{group}")
-	    params:
-	        prefix = dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs"
-	    threads: M.T('diamond_build')
-	    resources: nodes = M.T('diamond_build'),
-	    shell: "diamond makedb --in {input} --db {params.prefix} >> {log} 2>&1"
+    rule diamond_build:
+        """ Run diamond makedb on the contigs fasta"""
+        log: dirs_dict["LOGS_DIR"] + "/{group}-diamond_build.log"
+        input: M.get_fasta
+        output:
+            o = expand(dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs.dmnd", group="{group}")
+        params:
+            prefix = dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs"
+        threads: M.T('diamond_build')
+        resources: nodes = M.T('diamond_build'),
+        shell: "diamond makedb --in {input} --db {params.prefix} >> {log} 2>&1"
 
 def input_for_diamond(wildcards):
     '''Creating a dictionary containing the input files for diamond.'''
@@ -753,31 +753,31 @@ def input_for_diamond(wildcards):
     return d
 
 if M.get_param_value_from_config(['diamond', 'run']) == True:
-	rule bowtie:
-	    """ Run mapping with diamond"""
-	    version: 1.0
-	    log: dirs_dict["LOGS_DIR"] + "/{group}-{sample}-diamond.log"
-	    input: unpack(input_for_diamond)
-	    # setting the output as temp, since we only want to keep the bam file.
-	    output:
-	        sam = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}.sam")
-	    params:
-	        bowtie_build_prefix = rules.diamond_build.params.prefix,
-	        additional_params = M.get_param_value_from_config(["diamond", "additional_params"])
-	    threads: M.T('diamond')
-	    resources: nodes = M.T('diamond'),
-		# TODO: implement running on R2 sequences (currently only maps R1)
-	    shell:
-	        """
-	            diamond blastx --threads {threads} --db {params.bowtie_build_prefix} --query {input.r1} \
-	            --outfmt 101 --out {output.sam} {params.additional_params} >> {log} 2>&1
-	        """
+    rule bowtie:
+        """ Run mapping with diamond"""
+        version: 1.0
+        log: dirs_dict["LOGS_DIR"] + "/{group}-{sample}-diamond.log"
+        input: unpack(input_for_diamond)
+        # setting the output as temp, since we only want to keep the bam file.
+        output:
+            sam = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}.sam")
+        params:
+            bowtie_build_prefix = rules.diamond_build.params.prefix,
+            additional_params = M.get_param_value_from_config(["diamond", "additional_params"])
+        threads: M.T('diamond')
+        resources: nodes = M.T('diamond'),
+        # TODO: implement running on R2 sequences (currently only maps R1)
+        shell:
+            """
+                diamond blastx --threads {threads} --db {params.bowtie_build_prefix} --query {input.r1} \
+                --outfmt 101 --out {output.sam} {params.additional_params} >> {log} 2>&1
+            """
 def input_for_samtools():
-	"""Return .sam input for samtools view depending on which mapper has been run"""
-	if M.get_param_value_from_config(['bowtie', 'run']) == True:
-		return rules.bowtie.output.sam
-	else:
-		return rules.diamond.output.sam
+    """Return .sam input for samtools view depending on which mapper has been run"""
+    if M.get_param_value_from_config(['bowtie', 'run']) == True:
+        return rules.bowtie.output.sam
+    else:
+        return rules.diamond.output.sam
 
 rule samtools_view:
     """ sort sam file with samtools and create a RAW.bam file"""
