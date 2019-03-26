@@ -760,7 +760,7 @@ if M.get_param_value_from_config(['diamond', 'run']) == True:
         input: unpack(input_for_diamond)
         # setting the output as temp, since we only want to keep the bam file.
         output:
-            sam1 = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}-R1.sam")
+            sam1 = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}-R1.sam"),
             sam2 = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}-R2.sam")
         params:
             diamond_build_prefix = rules.diamond_build.params.prefix,
