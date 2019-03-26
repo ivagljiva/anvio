@@ -557,7 +557,7 @@ if run_idba_ud == True:
 
 def input_for_metaspades(wildcards):
     '''
-        The purpose of this functino is to figure out whether co-assembly is done.
+        The purpose of this function is to figure out whether co-assembly is done.
         if co-assembly is done then we need to first merge the fastq files
     '''
     input_file_dict = {}
@@ -650,7 +650,7 @@ if M.get_param_value_from_config(['megahit', 'run']) == True:
             verbose = M.get_rule_param("megahit", "--verbose"),
         # Notice that megahit requires a directory to be specified as
         # output. If the directory already exists then megahit will not
-        # run. To avoid this, the for megahit is a temporary directory,
+        # run. To avoid this, the output for megahit is a temporary directory,
         # once megahit is done running then the contigs database is moved
         # to the final location.
         output:
@@ -658,7 +658,7 @@ if M.get_param_value_from_config(['megahit', 'run']) == True:
         threads: M.T('megahit')
         resources: nodes = M.T('megahit'),
         # Making this rule a shadow rule so all extra files created by megahit
-        # are not retaineded (it is not enough to define the directory as temporary
+        # are not retained (it is not enough to define the directory as temporary
         # because when failing in the middle of a run, snakemake doesn't delete directories)
         run:
             r1 = ','.join(input.r1)
