@@ -755,7 +755,6 @@ def input_for_diamond(wildcards):
 if M.get_param_value_from_config(['diamond', 'run']) == True:
     rule diamond:
         """ Run mapping with diamond"""
-        version: 1.0
         log: dirs_dict["LOGS_DIR"] + "/{group}-{sample}-diamond.log"
         input: unpack(input_for_diamond)
         # setting the output as temp, since we only want to keep the bam file.
