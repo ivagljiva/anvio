@@ -694,8 +694,9 @@ if M.get_param_value_from_config(['bowtie', 'run']) == True:
             prefix = dirs_dict["MAPPING_DIR"] + "/{group}/{group}-contigs"
         threads: M.T('bowtie_build')
         resources: nodes = M.T('bowtie_build'),
-        shell: "bowtie2-build {input} {params.prefix} >> {log} 2>&1"
-
+        run:
+            cmd = "bowtie2-build {input} {params.prefix} >> {log} 2>&1"
+            shell(cmd)
 
 def input_for_bowtie(wildcards):
     '''Creating a dictionary containing the input files for bowtie.'''
@@ -722,11 +723,11 @@ if M.get_param_value_from_config(['bowtie', 'run']) == True:
             additional_params = M.get_param_value_from_config(["bowtie", "additional_params"])
         threads: M.T('bowtie')
         resources: nodes = M.T('bowtie'),
-        shell:
-            """
-                bowtie2 --threads {threads} -x {params.bowtie_build_prefix} -1 {input.r1} -2 {input.r2} \
-                {params.additional_params} -S {output.sam} >> {log} 2>&1
-            """
+        run:
+            cmd = "bowtie2 --threads {threads} -x {params.bowtie_build_prefix} " + \
+                "-1 {input.r1} -2 {input.r2} {params.additional_params} " + \
+                "-S {output.sam} >> {log} 2>&1"
+            shell(cmd)
 
 if M.get_param_value_from_config(['diamond', 'run']) == True:
     rule diamond_build:
@@ -759,18 +760,24 @@ if M.get_param_value_from_config(['diamond', 'run']) == True:
         input: unpack(input_for_diamond)
         # setting the output as temp, since we only want to keep the bam file.
         output:
-            sam = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}.sam")
+            sam1 = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}-R1.sam")
+            sam2 = temp(dirs_dict["MAPPING_DIR"] + "/{group}/{sample}-R2.sam")
         params:
             diamond_build_prefix = rules.diamond_build.params.prefix,
             additional_params = M.get_param_value_from_config(["diamond", "additional_params"])
         threads: M.T('diamond')
         resources: nodes = M.T('diamond'),
-        # TODO: implement running on R2 sequences (currently only maps R1)
-        shell:
-            """
-                diamond blastx --threads {threads} --db {params.diamond_build_prefix} --query {input.r1} \
-                --outfmt 101 --out {output.sam} {params.additional_params} >> {log} 2>&1
-            """
+        run:
+            cmd1 = "diamond blastx --threads {threads} --db {params.diamond_build_prefix} " + \
+                "--query {input.r1} --outfmt 101 --out {output.sam1} " + \
+                " {params.additional_params} >> {log} 2>&1"
+            shell(cmd1)
+            cmd2 = "diamond blastx --threads {threads} --db {params.diamond_build_prefix} " + \
+                "--query {input.r1} --outfmt 101 --out {output.sam2} " + \
+                " {params.additional_params} >> {log} 2>&1"
+            shell(cmd2)
+
+
 def input_for_samtools(wildcards):
     """Return .sam input for samtools view depending on which mapper has been run"""
     if M.get_param_value_from_config(['bowtie', 'run']) == True:
